@@ -131,8 +131,17 @@ Name: Oldpeak, dtype: int64
 a = data.drop('Age', axis=1)
 b = sns.pairplot(a, hue='Oldpeak', markers='+')
 plt.show()
+//görselleri yükleyemedim
 
 
+[23]
+a = sns.violinplot(y='Oldpeak', x='RestingBP', data=data, inner='quartile')
+plt.show()
+a = sns.violinplot(y='Oldpeak', x='Cholesterol', data=data, inner='quartile')
+plt.show()
+a = sns.violinplot(y='Oldpeak', x='FastingBS', data=data, inner='quartile')
+plt.show()
+//görselleri yükleyemedim
 
 
 [15]
