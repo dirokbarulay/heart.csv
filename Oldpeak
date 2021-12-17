@@ -1,0 +1,159 @@
+import numpy as np
+import pandas as pd
+import seaborn as sns
+sns.set_palette('husl')
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+from sklearn import metrics
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+
+data = pd.read_csv('heart.csv')
+
+
+data.head()
+Age	Sex	ChestPainType	RestingBP	Cholesterol	FastingBS	RestingECG	MaxHR	ExerciseAngina	Oldpeak	ST_Slope	HeartDisease
+0	40	M	ATA	140	289	0	Normal	172	N	0.0	Up	0
+1	49	F	NAP	160	180	0	Normal	156	N	1.0	Flat	1
+2	37	M	ATA	130	283	0	ST	98	N	0.0	Up	0
+3	48	F	ASY	138	214	0	Normal	108	Y	1.5	Flat	1
+4	54	M	NAP	150	195	0	Normal	122	N	0.0	Up	0
+
+data.sample(7)
+	Age	Sex	ChestPainType	RestingBP	Cholesterol	FastingBS	RestingECG	MaxHR	ExerciseAngina	Oldpeak	ST_Slope	HeartDisease
+286	59	M	ASY	140	169	0	Normal	140	N	0.0	Up	0
+702	59	M	TA	178	270	0	LVH	145	N	4.2	Down	0
+441	69	M	ASY	130	0	1	ST	129	N	1.0	Flat	1
+99	41	M	ATA	125	269	0	Normal	144	N	0.0	Up	0
+768	64	F	ASY	130	303	0	Normal	122	N	2.0	Flat	0
+390	51	M	ASY	140	0	0	Normal	60	N	0.0	Flat	1
+890	64	M	TA	170	227	0	LVH	155	N	0.6	Flat	0
+
+
+data.info()
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 918 entries, 0 to 917
+Data columns (total 12 columns):
+ #   Column          Non-Null Count  Dtype  
+---  ------          --------------  -----  
+ 0   Age             918 non-null    int64  
+ 1   Sex             918 non-null    object 
+ 2   ChestPainType   918 non-null    object 
+ 3   RestingBP       918 non-null    int64  
+ 4   Cholesterol     918 non-null    int64  
+ 5   FastingBS       918 non-null    int64  
+ 6   RestingECG      918 non-null    object 
+ 7   MaxHR           918 non-null    int64  
+ 8   ExerciseAngina  918 non-null    object 
+ 9   Oldpeak         918 non-null    float64
+ 10  ST_Slope        918 non-null    object 
+ 11  HeartDisease    918 non-null    int64  
+dtypes: float64(1), int64(6), object(5)
+memory usage: 86.2+ KB
+
+
+[5]
+0 sn.
+data.describe()
+       Age	      RestingBP	  Cholesterol	FastingBS  	MaxHR	      Oldpeak	   HeartDisease
+count	918.000000	918.000000	918.000000	918.000000	918.000000	918.000000	918.000000
+mean	53.510893	  132.396514	198.799564	0.233115	  136.809368	0.887364	  0.553377
+std  	9.432617	  18.514154	  109.384145	0.423046	  25.460334	  1.066570	  0.497414
+min	  28.000000	  0.000000	  0.000000	  0.000000	  60.000000	  -2.600000	  0.000000
+25%	  47.000000	  120.000000	173.250000	0.000000	  120.000000	0.000000	  0.000000
+50%	  54.000000  	130.000000	223.000000	0.000000  	138.000000	0.600000	  1.000000
+75%  	60.000000	  140.000000	267.000000	0.000000	  156.000000	1.500000  	1.000000
+max	  77.000000	  200.000000	603.000000	1.000000	  202.000000	6.200000   	1.000000
+
+[8]
+0 sn.
+data['Oldpeak'].value_counts()
+ 0.0    368
+ 1.0     86
+ 2.0     76
+ 1.5     53
+ 3.0     28
+ 1.2     26
+ 0.2     22
+ 0.5     19
+ 1.4     18
+ 1.8     17
+ 2.5     16
+ 0.8     16
+ 1.6     16
+ 0.1     14
+ 0.6     14
+ 0.4     11
+ 0.3     11
+ 4.0      8
+ 1.1      7
+ 0.7      7
+ 2.8      7
+ 1.9      7
+ 2.6      7
+ 1.3      7
+ 1.7      6
+ 2.2      5
+ 3.6      4
+ 0.9      4
+ 2.4      4
+ 3.4      3
+ 2.3      2
+-1.0      2
+-0.5      2
+ 3.5      2
+ 2.1      2
+ 4.2      2
+-0.1      2
+ 3.2      2
+-0.8      1
+-0.9      1
+ 5.6      1
+ 3.8      1
+ 3.1      1
+-0.7      1
+-1.1      1
+ 5.0      1
+-1.5      1
+ 3.7      1
+ 4.4      1
+-2.0      1
+ 6.2      1
+ 2.9      1
+-2.6      1
+Name: Oldpeak, dtype: int64
+
+
+[14]
+18 sn.
+a = data.drop('Age', axis=1)
+b = sns.pairplot(a, hue='Oldpeak', markers='+')
+plt.show()
+
+
+
+
+[15]
+0 sn.
+X = data.drop(['Age', 'Oldpeak'], axis=1)
+Y = data['Oldpeak']
+print(X.shape)
+print(Y.shape)
+(918, 10)
+(918,)
+
+
+
+[36]
+0 sn.
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.6, random_state=5)
+print(X_train.shape)
+print(Y_train.shape)
+print(X_test.shape)
+print(Y_test.shape)
+(367, 10)
+(367,)
+(551, 10)
+(551,)
